@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+function bootstrap {
+  local shome="$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"
+  source "$shome/script/profile"
+
+  case "$(uname -s)" in
+    Darwin)
+      return 0
+      ;;
+  esac
+
+  local url_flannel_Linux="https://github.com/coreos/flannel/releases/download/v${FLANNEL_VERSION}/flannel-v${FLANNEL_VERSION}-linux-amd64.tar.gz"
+
+  local url_flannel="url_flannel_$(uname -s)"
+  local fnm_flannel="$(basename "${!url_flannel}")"
+  cache curl "$fnm_flannel" "${!url_flannel}"
+
+  rm -rf "$shome/vendor/flannel-${FLANNEL_VERSION}"
+  mkdir -p "$shome/vendor/flannel-${FLANNEL_VERSION}"
+  pushd "$shome/vendor/flannel-${FLANNEL_VERSION}"
+  case "$fnm_flannel" in
+    *.zip)
+      unzip "/data/cache/curl/$fnm_flannel"
+      ;;
+    *.tar.gz)
+      tar xfz "/data/cache/curl/$fnm_flannel"
+      ;;
+  esac
+
+  (set +f; mv flanneld "$shome/bin/")
+  popd
+  rm -rf "$shome/vendor/flannel-${FLANNEL_VERSION}"
+}
+
+bootstrap

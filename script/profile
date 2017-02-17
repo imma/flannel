@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+function _flannel_profile {
+  local shome="${_flannel_home:-"$(cd -P -- "$(dirname -- "$BASH_SOURCE")/.." && pwd -P)"}"
+  PATH="$shome/bin:$PATH"
+
+  FLANNEL_VERSION="${FLANNEL_VERSION:-0.6.2}"
+}
+
+_flannel_profile
