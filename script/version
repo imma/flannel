@@ -4,6 +4,10 @@ function version {
   local shome="$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"
   source "$shome/script/profile"
 
+  if ! type -P flanneld >/dev/null; then
+    return
+  fi
+
   local ver_flannel="$(flanneld --version 2>&1 | perl -pe 's{^v}{}' || true)"
   jq -n --arg flannel "$ver_flannel" '{flannel: $flannel}'
 }
